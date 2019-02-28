@@ -1,8 +1,13 @@
 ﻿#include "pch.h"
 #include <opencv2/opencv.hpp>
+#include <fstream>
+#include <iostream>
+#include <clocale>
+#include <string>
 
 using namespace cv;
 using namespace cv::dnn;
+using namespace std;
 
 int main(int argc, char** argv) {
 	Net faceDetector = readNet("../opencv_face_detector.prototxt",
@@ -14,7 +19,7 @@ int main(int argc, char** argv) {
 	while (cap.read(frame))
 	{
 		int key = waitKey(1);
-
+		string in;
 		// Get detections
 		blobFromImage(frame, blob, 1.0, Size(160, 120), Scalar(104, 177, 123));
 
@@ -46,6 +51,13 @@ int main(int argc, char** argv) {
 			{
 				if (targetEmbedding.empty())
 					targetEmbedding = embedding.clone();
+				cout << "Write your name and press enter"<< endl;
+				getline(cin,in);
+				stringstream ss;
+				ss << in << ".txt";
+				ofstream ofs("Save/" + ss.str());
+				ofs << targetEmbedding << endl;
+				ofs.close();
 			}
 			else if (key == 27)
 				return 0;
