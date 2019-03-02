@@ -2,7 +2,6 @@
 #include <opencv2/opencv.hpp>
 #include <fstream>
 #include <iostream>
-#include <clocale>
 #include <string>
 
 using namespace cv;
@@ -47,6 +46,7 @@ int main(int argc, char** argv) {
 			Mat embedding = faceRecogn.forward();
 
 			// Register a new embedding vector or compare with existing one.
+			cout << "If u already scanned press Home. Else press space" << endl;
 			if (key == 32)
 			{
 				if (targetEmbedding.empty())
@@ -61,6 +61,20 @@ int main(int argc, char** argv) {
 			}
 			else if (key == 27)
 				return 0;
+			if (key == 71)//при нажатии кнопки Home
+			{
+				cout << "Write your name and press enter" << endl;
+				getline(cin, in);
+				stringstream ss;
+				ss << in << ".txt";
+				ifstream in("Save/" + ss.str());
+				if (in.is_open())
+				{
+					//вот тут и нужно считать все из файла
+				}
+				else
+				cout << "File not exist,or you have a mistake in its name" << endl;
+			}
 
 			Scalar color(0, 0, 255);  // Red
 			if (!targetEmbedding.empty() && embedding.dot(targetEmbedding) > 0.8)
