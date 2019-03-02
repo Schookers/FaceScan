@@ -17,8 +17,30 @@ int main(int argc, char** argv) {
 	Mat frame, blob, blobRecogn, targetEmbedding;
 	while (cap.read(frame))
 	{
+		string file_contents;
+		string str;
+		string RT;
+		cout << "Write your name and press enter" << endl;
+		getline(cin, RT);
+		stringstream ST;
+		ST << RT << ".txt";
+		ifstream in("Save/" + ST.str());
+		if (in.is_open())
+		{
+			while (getline(ST, str))
+			{
+				file_contents += str;
+				file_contents.push_back('\n');
+			}
+		}
+		
+		else 
+		{
+		cout << "File not exist,or you have a mistake in its name" << endl;
+		}
+
 		int key = waitKey(1);
-		string in;
+		string FT;
 		// Get detections
 		blobFromImage(frame, blob, 1.0, Size(160, 120), Scalar(104, 177, 123));
 
@@ -52,32 +74,22 @@ int main(int argc, char** argv) {
 				if (targetEmbedding.empty())
 					targetEmbedding = embedding.clone();
 				cout << "Write your name and press enter"<< endl;
-				getline(cin,in);
+				getline(cin,FT);
 				stringstream ss;
-				ss << in << ".txt";
+				ss << FT << ".txt";
 				ofstream ofs("Save/" + ss.str());
 				ofs << targetEmbedding << endl;
 				ofs.close();
 			}
 			else if (key == 27)
 				return 0;
-			if (key == 71)//при нажатии кнопки Home
-			{
-				cout << "Write your name and press enter" << endl;
-				getline(cin, in);
-				stringstream ss;
-				ss << in << ".txt";
-				ifstream in("Save/" + ss.str());
-				if (in.is_open())
-				{
-					//вот тут и нужно считать все из файла
-				}
-				else
-				cout << "File not exist,or you have a mistake in its name" << endl;
-			}
 
 			Scalar color(0, 0, 255);  // Red
 			if (!targetEmbedding.empty() && embedding.dot(targetEmbedding) > 0.8)
+			{
+				color = Scalar(0, 255, 0);  // Green
+			}
+			else if (!targetEmbedding.empty() &&  ST.str() > 0.8)
 			{
 				color = Scalar(0, 255, 0);  // Green
 			}
