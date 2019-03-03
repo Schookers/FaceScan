@@ -8,7 +8,30 @@ using namespace cv;
 using namespace cv::dnn;
 using namespace std;
 
-int main(int argc, char** argv) {
+void writeMatToFile(cv::Mat& m, const char* filename)
+{
+	ofstream fout(filename);
+
+	if (!fout)
+	{
+		cout << "File Not Opened" << endl;  return;
+	}
+
+	for (int i = 0; i < m.rows; i++)
+	{
+		for (int j = 0; j < m.cols; j++)
+		{
+			fout << m.at<float>(i, j) << "\t";
+		}
+		fout << endl;
+	}
+
+	fout.close();
+}
+
+
+int main(int argc, char** argv) 
+{
 	Net faceDetector = readNet("../opencv_face_detector.prototxt",
 		"../opencv_face_detector.caffemodel");
 	Net faceRecogn = readNet("../openface_nn4.small2.v1.t7");
@@ -17,30 +40,9 @@ int main(int argc, char** argv) {
 	Mat frame, blob, blobRecogn, targetEmbedding;
 	while (cap.read(frame))
 	{
-		string file_contents;
-		string str;
-		string RT;
-		cout << "Write your name and press enter" << endl;
-		getline(cin, RT);
-		stringstream ST;
-		ST << RT << ".txt";
-		ifstream in("Save/" + ST.str());
-		if (in.is_open())
-		{
-			while (getline(ST, str))
-			{
-				file_contents += str;
-				file_contents.push_back('\n');
-			}
-		}
 		
-		else 
-		{
-		cout << "File not exist,or you have a mistake in its name" << endl;
-		}
 
 		int key = waitKey(1);
-		string FT;
 		// Get detections
 		blobFromImage(frame, blob, 1.0, Size(160, 120), Scalar(104, 177, 123));
 
@@ -68,18 +70,19 @@ int main(int argc, char** argv) {
 			Mat embedding = faceRecogn.forward();
 
 			// Register a new embedding vector or compare with existing one.
-			cout << "If u already scanned press Home. Else press space" << endl;
+			cout << "Press space" << endl;
 			if (key == 32)
 			{
 				if (targetEmbedding.empty())
 					targetEmbedding = embedding.clone();
+				string FT;
 				cout << "Write your name and press enter"<< endl;
 				getline(cin,FT);
 				stringstream ss;
 				ss << FT << ".txt";
-				ofstream ofs("Save/" + ss.str());
-				ofs << targetEmbedding << endl;
-				ofs.close();
+				cv::Mat m = cv::Mat::eye(5, 5, CV_32FC1);
+				writeMatToFile(m, ss);
+				
 			}
 			else if (key == 27)
 				return 0;
