@@ -46,16 +46,18 @@ void embeddingHandler(Mat & embedding)
 
 void writeEmbedding(Mat & embedding)
 {
-	ofstream fout("database.txt");
+	ofstream fout; 
+	fout.open("database.txt", ofstream::out | ofstream::app);
 
 	if (!fout)
 	{
-		cout << "File Not Opened" << endl;  return;
+		cout << "File Not Opened" << endl;
+		return;
 	}
 
 	for (int i = 0; i < embedding.rows; i++)
 	{
-		fout << "ALEXANDER SHAIN" << endl;
+		fout << "KEKS" << endl;
 		for (int j = 0; j < embedding.cols; j++)
 		{
 			fout << embedding.at<float>(i, j) << "\t";
@@ -66,8 +68,35 @@ void writeEmbedding(Mat & embedding)
 	fout.close();
 }
 
-void readDatabase()
+void readDatabase(vector<vector<float>>& embeddings, vector<string>& names, vector<Mat>& targets)
 {
+	fstream dbfile("database.txt");
+	string line;
+
+	int i = 0;
+	while (getline(dbfile, line))
+	{
+		if (i%2 == 1)
+		{
+			float value;
+			stringstream ss(line);
+
+			embeddings.push_back(vector<float>());
+
+			while (ss >> value)
+			{
+				embeddings[i/2].push_back(value);
+			}
+
+			targets.push_back(Mat( 1, embeddings[i/2].size(), CV_32FC1, (float*)embeddings[i/2].data()));
+
+		}
+		else
+		{
+			names.push_back(line);
+		}
+		++i;
+	}
 
 }
 /*

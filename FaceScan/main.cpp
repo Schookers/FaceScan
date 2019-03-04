@@ -4,13 +4,20 @@ int main(int argc, char** argv)
 {
 	Net faceDetector = readNet("../opencv_face_detector.prototxt",
 		"../opencv_face_detector.caffemodel");
+
 	Net faceRecogn = readNet("../openface_nn4.small2.v1.t7");
 
-	Mat frame, targetEmbedding;// , blob, blobRecogn, targetEmbedding;
+	Mat frame, targetEmbedding;
 
-	vector<Mat> emDB; // DATABASE OF VECTORS
+	vector<Mat> targets; // DATABASE OF MAT-FORMATTED EMBEDDING VECTORS
+
+	vector<vector<float>> embeddings; // EMBEDDINGS FROM DATABASE
+
+	vector<string> names; // NAMES FROM DATABASE
 
 	VideoCapture cap(0);
+
+	readDatabase(embeddings, names, targets); // GET PREVIOUSLY WRITED EMBEDDINGS
 
 	while (cap.read(frame))
 	{
@@ -22,23 +29,25 @@ int main(int argc, char** argv)
 		{
 			Mat embedding = getEmbedding(decs[i], frame, faceRecogn); //GET EMBEDDING VECTOR
 
-
-
 			if (key == 32)
 			{
 				if (targetEmbedding.empty())
 				{
 					targetEmbedding = embedding.clone();
 					writeEmbedding(targetEmbedding);
-
 				}
 			}
 			else if (key == 27)
 				return 0;
+
 			Scalar color(0, 0, 255);  // Red
-			if (!targetEmbedding.empty() && embedding.dot(targetEmbedding) > 0.8)
+			for (int j = 0; j < targets.size(); j++) // SHOULD BE WHILE UNTIL WE FIND
 			{
-				color = Scalar(0, 255, 0);  // Green
+				if (!targets.empty() && embedding.dot(targets[j]) > 0.8)
+				{
+					color = Scalar(0, 255, 0);  // Green
+					putText(frame, names[j], Point(decs[i]->xmin, decs[i]->ymin - 10), FONT_HERSHEY_COMPLEX_SMALL, 0.8, Scalar(0, 255, 0), 1);
+				}
 			}
 			rectangle(frame, Point(decs[i]->xmin, decs[i]->ymin), Point(decs[i]->xmax, decs[i]->ymax), color, 3);
 		}

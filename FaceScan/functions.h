@@ -28,7 +28,7 @@ void embeddingHandler(Mat& embedding);
 
 void writeEmbedding(Mat& embedding);
 
-void readDatabase();
+void readDatabase(vector<vector<float>>& embeddings, vector<string>& names, vector<Mat>& targets);
 /*
 void writeEmbedding(cv::Mat& embedding, const char* personName);
 
