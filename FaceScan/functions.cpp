@@ -1,0 +1,78 @@
+#include "functions.h"
+
+vector<ROIC*> getDetections(Mat& frame, Net& faceDetector)
+{
+	Mat blob;
+	vector<ROIC*> facesBoxes; // ARRAY OF FACE DETECTIONS
+	// Get detections
+	blobFromImage(frame, blob, 1.0, Size(160, 120), Scalar(104, 177, 123));
+
+	faceDetector.setInput(blob);
+	Mat out = faceDetector.forward();
+
+	float* detections = (float*)out.data;
+	// An every detection is a vector [batchId(0),classId(0),confidence,left,top,right,bottom]
+	for (int i = 0; i < out.total() / 7; ++i)
+	{
+		float confidence = detections[i * 7 + 2];
+		if (confidence < 0.7)
+			continue;
+
+		int xmin = max(0.0f, min(detections[i * 7 + 3], 1.0f)) * frame.cols;
+		int ymin = max(0.0f, min(detections[i * 7 + 4], 1.0f)) * frame.rows;
+		int xmax = max(0.0f, min(detections[i * 7 + 5], 1.0f)) * frame.cols;
+		int ymax = max(0.0f, min(detections[i * 7 + 6], 1.0f)) * frame.rows;
+
+		ROIC* roi = new ROIC{ xmin, xmax, ymin, ymax };
+
+		facesBoxes.push_back(roi);
+	}
+	return facesBoxes;
+}
+
+Mat getEmbedding(ROIC * roi, Mat & frame, Net& faceRecogn)
+{
+	Mat blobRecogn;
+	Mat curRoi = frame.rowRange(roi->ymin, roi->ymax).colRange(roi->xmin, roi->xmax); // CURRENT ROI
+	blobFromImage(curRoi, blobRecogn, 1.0 / 255, Size(96, 96), Scalar(), true);
+	faceRecogn.setInput(blobRecogn);
+	Mat embedding = faceRecogn.forward();
+	return embedding;
+}
+void embeddingHandler(Mat & embedding)
+{
+
+}
+
+void writeEmbedding(Mat & embedding)
+{
+	ofstream fout("database.txt");
+
+	if (!fout)
+	{
+		cout << "File Not Opened" << endl;  return;
+	}
+
+	for (int i = 0; i < embedding.rows; i++)
+	{
+		fout << "ALEXANDER SHAIN" << endl;
+		for (int j = 0; j < embedding.cols; j++)
+		{
+			fout << embedding.at<float>(i, j) << "\t";
+		}
+		fout << endl;
+	}
+
+	fout.close();
+}
+
+void readDatabase()
+{
+
+}
+/*
+void writeEmbedding(cv::Mat & embedding, const char * personName)
+{
+
+}
+*/
