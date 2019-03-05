@@ -44,11 +44,20 @@ void embeddingHandler(Mat & embedding)
 
 }
 
-void writeEmbedding(Mat & embedding)
+void writeEmbedding(Mat & embedding, vector<Mat>& targets, vector<string>& names, vector<vector<float>>& embeddings)
 {
-	string UN;
-	ofstream fout; 
+	string un;//username
+	ofstream fout;
+	
+//	targets.push_back(embedding);
+
 	fout.open("database.txt", ofstream::out | ofstream::app);
+
+	cout << "Write your name and press enter" << endl;
+
+	getline(cin, un);
+	fout << un << endl;
+	names.push_back(un);
 
 	if (!fout)
 	{
@@ -56,19 +65,22 @@ void writeEmbedding(Mat & embedding)
 		return;
 	}
 
+	vector<float> fEmbed; //EMBEDDING TO FLOAT
+
 	for (int i = 0; i < embedding.rows; i++)
 	{
-		cout << "Write your name and press enter" << endl;
-		getline(cin, UN); 
-		fout << UN << endl;
+
 		for (int j = 0; j < embedding.cols; j++)
 		{
+			fEmbed.push_back(embedding.at<float>(i, j));
 			fout << embedding.at<float>(i, j) << "\t";
 		}
 		fout << endl;
 	}
-
+	embeddings.push_back(fEmbed);
+	targets.push_back(Mat(1, embeddings[embeddings.size() - 1].size(), CV_32FC1, (float*)embeddings[embeddings.size()-1].data()));
 	fout.close();
+
 }
 
 void readDatabase(vector<vector<float>>& embeddings, vector<string>& names, vector<Mat>& targets)

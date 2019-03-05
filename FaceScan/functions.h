@@ -26,7 +26,7 @@ Mat getEmbedding(ROIC* roi, Mat & frame, Net& faceRecogn); // GET EMBEDDING VECT
 
 void embeddingHandler(Mat& embedding);
 
-void writeEmbedding(Mat& embedding);
+void writeEmbedding(Mat& embedding, vector<Mat>& targets, vector<string>& names, vector<vector<float>>& embeddings);
 
 void readDatabase(vector<vector<float>>& embeddings, vector<string>& names, vector<Mat>& targets);
 /*
