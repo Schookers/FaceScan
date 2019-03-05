@@ -46,6 +46,7 @@ void embeddingHandler(Mat & embedding)
 
 void writeEmbedding(Mat & embedding)
 {
+	string UN;
 	ofstream fout; 
 	fout.open("database.txt", ofstream::out | ofstream::app);
 
@@ -57,7 +58,9 @@ void writeEmbedding(Mat & embedding)
 
 	for (int i = 0; i < embedding.rows; i++)
 	{
-		fout << "KEKS" << endl;
+		cout << "Write your name and press enter" << endl;
+		getline(cin, UN); 
+		fout << UN << endl;
 		for (int j = 0; j < embedding.cols; j++)
 		{
 			fout << embedding.at<float>(i, j) << "\t";
