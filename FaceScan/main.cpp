@@ -31,20 +31,20 @@ int main(int argc, char** argv)
 
 			if (key == 32)
 			{
-					writeEmbedding(embedding,targets,names,embeddings);
+				writeEmbedding(embedding, targets, names, embeddings);
 			}
 			else if (key == 27)
 				return 0;
 
 			Scalar color(0, 0, 255);  // Red
-			for (int j = 0; j < targets.size(); j++) // SHOULD BE WHILE UNTIL WE FIND
+			int maxAt = findBest(targets, embedding);
+			if (maxAt > -1)
 			{
-				if (embedding.dot(targets[j]) > 0.8)
-				{
-					color = Scalar(0, 255, 0);  // Green
-					putText(frame, names[j], Point(decs[i]->xmin, decs[i]->ymin - 10), FONT_HERSHEY_COMPLEX_SMALL, 0.8, Scalar(0, 255, 0), 1);
-				}
+
+				color = Scalar(0, 255, 0);  // Green
+				putText(frame, names[maxAt], Point(decs[i]->xmin, decs[i]->ymin - 10), FONT_HERSHEY_COMPLEX_SMALL, 0.8, Scalar(0, 255, 0), 1);
 			}
+			
 			rectangle(frame, Point(decs[i]->xmin, decs[i]->ymin), Point(decs[i]->xmax, decs[i]->ymax), color, 3);
 		}
 		imshow("out", frame);

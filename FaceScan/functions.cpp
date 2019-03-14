@@ -44,11 +44,10 @@ void embeddingHandler(Mat & embedding)
 
 }
 
-void writeEmbedding(Mat & embedding, vector<Mat>& targets, vector<string>& names, vector<vector<float>>& embeddings,int& number)
+void writeEmbedding(Mat & embedding, vector<Mat>& targets, vector<string>& names, vector<vector<float>>& embeddings)
 {
 	string un;//username
 	ofstream fout;
-	int number;
 //	targets.push_back(embedding);
 
 	fout.open("database.txt", ofstream::out | ofstream::app);
@@ -58,7 +57,6 @@ void writeEmbedding(Mat & embedding, vector<Mat>& targets, vector<string>& names
 	getline(cin, un);
 	fout << un << endl;
 	names.push_back(un);
-	number = number + 1;
 
 	if (!fout)
 	{
@@ -116,12 +114,25 @@ void readDatabase(vector<vector<float>>& embeddings, vector<string>& names, vect
 
 }
 
-int maxVector(vector<vector<float>>& embeddings, Mat & embedding, vector<Mat>& targets,int& number)
+int findBest(vector<Mat>& targets, Mat & embedding)
 {
-	int max;
-	for (int j = 1; j <number; j++)
-		if (embedding.dot(targets[0]) > max)
-			max = j;
-	return max;
+	int maxAt = 0;
+	double bestDot = embedding.dot(targets[0]);
+	double localDot = bestDot;
+	for (int j = 1; j < targets.size(); j++) 
+	{
+		localDot = embedding.dot(targets[j]);
+		if (localDot > bestDot) 
+		{
+			maxAt = j;
+			bestDot = localDot;
+		}
+	}
+	if (bestDot > 0.8)
+		return maxAt;
+	else
+	{
+		return -1;
+	}
 }
 
