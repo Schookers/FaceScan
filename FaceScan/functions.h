@@ -56,4 +56,5 @@ void writeMatToFile(cv::Mat& m, const char* filename)
 }
 */
 
-
+int maxVector(vector<vector<float>>& embeddings, Mat & embedding, vector<Mat>& targets,int& number);
+ 

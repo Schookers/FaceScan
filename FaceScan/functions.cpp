@@ -44,11 +44,11 @@ void embeddingHandler(Mat & embedding)
 
 }
 
-void writeEmbedding(Mat & embedding, vector<Mat>& targets, vector<string>& names, vector<vector<float>>& embeddings)
+void writeEmbedding(Mat & embedding, vector<Mat>& targets, vector<string>& names, vector<vector<float>>& embeddings,int& number)
 {
 	string un;//username
 	ofstream fout;
-	
+	int number;
 //	targets.push_back(embedding);
 
 	fout.open("database.txt", ofstream::out | ofstream::app);
@@ -58,6 +58,7 @@ void writeEmbedding(Mat & embedding, vector<Mat>& targets, vector<string>& names
 	getline(cin, un);
 	fout << un << endl;
 	names.push_back(un);
+	number = number + 1;
 
 	if (!fout)
 	{
@@ -114,9 +115,13 @@ void readDatabase(vector<vector<float>>& embeddings, vector<string>& names, vect
 	}
 
 }
-/*
-void writeEmbedding(cv::Mat & embedding, const char * personName)
-{
 
+int maxVector(vector<vector<float>>& embeddings, Mat & embedding, vector<Mat>& targets,int& number)
+{
+	int max;
+	for (int j = 1; j <number; j++)
+		if (embedding.dot(targets[0]) > max)
+			max = j;
+	return max;
 }
-*/
+
